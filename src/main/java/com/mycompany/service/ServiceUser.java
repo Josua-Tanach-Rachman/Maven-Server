@@ -5,9 +5,11 @@
 package com.mycompany.service;
 
 import com.mycompany.connection.DataBaseConnection;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import model.Model_Data;
 
 /**
@@ -87,4 +89,6 @@ public class ServiceUser {
             return false;
         }
     }
+    
+    
 }
