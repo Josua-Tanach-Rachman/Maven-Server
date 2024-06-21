@@ -9,8 +9,9 @@ import java.util.List;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
+import model.Model_Client;
 import model.Model_Data;
+import model.Model_User_Account;
 
 /**
  *
@@ -54,7 +55,8 @@ public class ServiceUser {
         }
     }
 
-    public boolean login(Model_Data data){
+    public Model_User_Account login(Model_Data data){
+        Model_User_Account acc = null;
         user = data.getUsername();
         pass = data.getPass();
         
@@ -64,31 +66,25 @@ public class ServiceUser {
         
         try {
             stmt = conn.createStatement();
-            sql = String.format("SELECT username, pass FROM UserList WHERE username LIKE '%s'",user);
+            sql = String.format("SELECT id_User, username FROM UserList WHERE username LIKE '%s'",user);
 
 
             rs = stmt.executeQuery(sql);
-            rs.next();
-            String checkUser = rs.getString(1);
-            String checkPass = rs.getString(2);
-            System.out.println(checkUser);
-            System.out.println(checkPass);
-
-            if(user.equals(checkUser)&& pass.equals(checkPass)){
-//                System.out.println("User Found");
-                return true;
-            }else{
-//                System.out.println("User Not Found");
-                return false;
+            
+            
+            if(rs.next()){
+                int idUser = rs.getInt(1);
+                String username = rs.getString(2);
+              
+                acc = new Model_User_Account(idUser, username);
             }
             
-
-            
+            return acc; 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
-    
+ 
     
 }
