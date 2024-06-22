@@ -4,6 +4,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import java.util.ArrayList;
 import java.util.List;
 import model.Model_Client;
+import org.json.JSONObject;
 
 
 public class Room {
@@ -56,6 +57,19 @@ public class Room {
 
     public void removeClient(Model_Client client) {
         clients.remove(client);
+    }
+    
+    public JSONObject toJSONObject(){
+        try {
+            JSONObject json = new JSONObject();
+            json.put("id_Room", id_Room);
+            json.put("nama", nama);
+            json.put("id_RM",id_RM);
+            return json;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public Model_Client getClientBySocket(SocketIOClient sioc){

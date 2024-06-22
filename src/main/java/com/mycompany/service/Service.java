@@ -137,9 +137,13 @@ public class Service {
                 List<Model_User_Account> result = ServiceRoom.getInstance().getUsersInRoom(idx);
                 sioc.sendEvent("getUsersInRoomFromServer", result.toArray());
                 
+                //Ambil room dari 0
+                Room selectedRoom = listRoom.get(idx-1);
+                sioc.sendEvent("changeTitle", selectedRoom.getNama());  
+                
                 //Idx perlu dikurangi untuk menyesuaikan dari 0
                 idx--;
-                Model_Client client = listRoom.get(idx).getClientBySocket(sioc);
+                Model_Client client = selectedRoom.getClientBySocket(sioc);
                 setCurrentRoomForClient(client, idx);
                 
              }
@@ -194,8 +198,7 @@ public class Service {
         List<Integer> roomList = ServiceRoom.getInstance().locateRoomForUser(user_Id);
         
         for(int idx: roomList){
-            if(idx==idxRoom){
-               
+            if(idx==idxRoom){       
                 listRoom.get(idx).addClient(client);
             }
             
@@ -222,8 +225,7 @@ public class Service {
     public void setCurrentRoomForClient(Model_Client client, Integer room) {
         
         this.currentRoom.put(client.getUser().getNama(),room);
-        
-        System.out.println(this.currentRoom.size()+" "+client.getUser().getNama());
+
         
     }
 }

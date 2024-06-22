@@ -66,7 +66,7 @@ public class ServiceUser {
         
         try {
             stmt = conn.createStatement();
-            sql = String.format("SELECT id_User, username FROM UserList WHERE username LIKE '%s'",user);
+            sql = String.format("SELECT id_User, username FROM UserList WHERE username LIKE '%s' and pass LIKE '%s'",user,pass);
 
 
             rs = stmt.executeQuery(sql);
