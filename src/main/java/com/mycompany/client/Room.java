@@ -2,9 +2,11 @@ package com.mycompany.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.Model_Client;
 
 public class Room {
-    List<Integer> Users;
+  
+    private List<Model_Client> clients;
     int id_Room;
     String nama;
     int id_RM;
@@ -13,21 +15,11 @@ public class Room {
         this.id_Room = id_Room;
         this.nama = nama;
         this.id_RM = id_RM;
-        this.Users= new ArrayList<>();
+        this.clients = new ArrayList<>();
         
     }
 
-    public synchronized void addUser(int id_User){
-        Users.add(id_User);
-    }
-    
-    public synchronized void  removeUser(int id_User){
-        Users.remove(id_User);
-    }
-    
-    public synchronized List<Integer> getUsers(){
-        return Users;
-    }
+ 
 
     public int getId_RM() {
         return id_RM;
@@ -52,6 +44,16 @@ public class Room {
     public void setNama(String nama) {
         this.nama = nama;
     }
-    
+    public List<Model_Client> getClients() {
+        return clients;
+    }
+
+    public void addClient(Model_Client client) {
+        clients.add(client);
+    }
+
+    public void removeClient(Model_Client client) {
+        clients.remove(client);
+    }
     
 }

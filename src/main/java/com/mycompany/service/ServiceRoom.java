@@ -140,6 +140,37 @@ public class ServiceRoom {
         }
     }
     
-    
+    public List<Integer> locateRoomForUser(int user_Id){    
+        String sql;
+        Statement stmt;
+        ResultSet rs;
+        
+        try {
+            List<Integer> listUsers = new ArrayList<>();
+            stmt = conn.createStatement();
+
+            //Ambil daftar user dari room yang dipilih
+            sql = String.format("""
+                                 SELECT userToRoom.id_Room
+                                  FROM UserList
+                                  JOIN userToRoom ON UserList.id_User = userToRoom.id_Room
+                                  WHERE userToRoom.id_User = %d""", user_Id);
+            rs = stmt.executeQuery(sql);
+            
+     
+            int id_Room;
+            while(rs.next()){
+                id_Room = rs.getInt(1);
+                listUsers.add(id_Room);
+            }
+
+
+
+            return listUsers;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     
 }

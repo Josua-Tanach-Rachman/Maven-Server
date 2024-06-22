@@ -18,3 +18,4 @@ model\Model_User_Account.class
 com\mycompany\service\Service.class
 com\mycompany\server\Main.class
 com\mycompany\service\Service$2.class
+model\Model_Room_Setter.class

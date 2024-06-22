@@ -14,6 +14,7 @@ public class Model_User_Account {
 
     private String nama;
     private int userId;
+    private int curRoom;
     
     public Model_User_Account(){
     }
@@ -21,6 +22,7 @@ public class Model_User_Account {
     public Model_User_Account(int userId, String nama){
         this.nama = nama;
         this.userId = userId;
+        this.curRoom=-1;
     }
 
     public String getNama() {
@@ -37,6 +39,14 @@ public class Model_User_Account {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getCurRoom() {
+        return curRoom;
+    }
+
+    public void setCurRoom(int curRoom) {
+        this.curRoom = curRoom;
     }
     
     

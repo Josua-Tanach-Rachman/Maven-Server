@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 import model.Model_Client;
 import model.Model_Data;
 import model.Model_Receive_Message;
+import model.Model_Room_Setter;
 import model.Model_Send_Message;
 import model.Model_User_Account;
 
@@ -36,7 +37,7 @@ public class Service {
    
     
     private List<Room> listRoom;
-    private List<Model_Client> clients;
+//    private List<Model_Client> clients;
     private int curRoomIdx;
     
     
@@ -52,12 +53,15 @@ public class Service {
             this.txtArea = txtArea;
             this.clientArea = clientArea;
             this.curRoomIdx=-1;
-            clients = new ArrayList<>();
+//            clients = new ArrayList<>();
+            initRoom();
     }
         
     private void initRoom(){
         ServiceRoom sr = ServiceRoom.getInstance();
         this.listRoom = sr.getAllRoom();
+        
+      
     }
      
     public void startServer(){
@@ -72,10 +76,6 @@ public class Service {
              public void onConnect(SocketIOClient sioc) {
                  txtArea.append("Client has connected succesfully\n");
                  clientArea.append(sioc.getRemoteAddress() +"\n");
-//                 clients.add(sioc); 
-//                    txtArea.append(String.valueOf(clients.size())+"\n");
-                
-                 
              }
              
          });
@@ -99,13 +99,8 @@ public class Service {
                     
                     if(acc!=null){
                         ar.sendAckData(true, acc);
-//                        System.out.println("Login viaServer");
                         addClient(sioc, acc);
-                        for(Model_Client client : clients){
-//                    System.out.println(client.getUser().getNama());
-                        txtArea.append(client.getUser().getNama()+"\n");
-                        }
-                         txtArea.append("================================================\n");
+                       
                     }else{
                         ar.sendAckData(false);
                     }
@@ -123,7 +118,6 @@ public class Service {
                 ServiceRoom sR = ServiceRoom.getInstance();
 
                 List<Room> result = sR.getRoom(t);
-     
                 sioc.sendEvent("getRoom", result.toArray());
 
             }
@@ -133,15 +127,11 @@ public class Service {
          //Perlu ditentukan apakah privilege lewat event listener atau 
          server.addEventListener("getUsersInRoom", Integer.class, new DataListener<Integer>() {
              @Override
-             public synchronized void onData(SocketIOClient sioc, Integer t, AckRequest ar) throws Exception {  
-                 ServiceRoom sR = ServiceRoom.getInstance();
-
-                List<Model_User_Account> result = sR.getUsersInRoom(t);
-                
-                for(Model_User_Account data : result){
-//                    System.out.println("Data Users in Server:"+data.getNama());
-                }
-                curRoomIdx = t;
+             public synchronized void onData(SocketIOClient sioc, Integer idx, AckRequest ar) throws Exception {  
+              
+           
+                List<Model_User_Account> result = ServiceRoom.getInstance().getUsersInRoom(idx);
+               
                 sioc.sendEvent("getUsersInRoom", result.toArray());
              }
          });
@@ -149,13 +139,10 @@ public class Service {
          server.addEventListener("send_to_users", Model_Send_Message.class, new DataListener<Model_Send_Message>(){
              @Override
              public void onData(SocketIOClient sioc, Model_Send_Message message, AckRequest ar) throws Exception {
-    
-                 broadcast(message);
+                 broadcastToRoom(message);
              }
-        
-        
     });
-         
+        
 //         server.addEventListener("broadcast", eventClass, listener);
          
          server.start();
@@ -164,36 +151,33 @@ public class Service {
          
     }
     public void addClient(SocketIOClient socket, Model_User_Account acc){
-        clients.add(new Model_Client(socket,acc));
+        int user_Id = acc.getUserId();
+        List<Integer> roomList = ServiceRoom.getInstance().locateRoomForUser(user_Id);
+        for(int idxRoom: roomList){
+            
+            listRoom.get(idxRoom).getClients().add(new Model_Client(socket,acc));
+        }
     }
     
     
-    public void broadcast(Model_Send_Message message){
+    public void broadcastToRoom(Model_Send_Message message){
         //Client emit ke server, server menerima "broadcast" dan sendEvent/send ke masing" sioc 
         
         //send Event ke masing" client
         //Broadcast ke ruangan yang dituju?
-
+        int roomIdx = message.getId_Room();
+        List<Model_Client> clients = listRoom.get(roomIdx).getClients();
         
          for(Model_Client client : clients){
-//                sioc.sendEvent("broadcast", message);
-                   if(client.getUser().getUserId()!=message.getFromIdUser()){
-                        
-                        client.getClient().sendEvent("broadcast", new Model_Receive_Message(message.getFromIdUser(), curRoomIdx, message.getText()));
+                    
+                    if(client.getUser().getUserId()!=message.getFromIdUser() ){
+                       
+                        client.getClient().sendEvent("broadcast", new Model_Receive_Message(message.getFromIdUser(), message.getId_Room(), message.getText()));
                    }
             }
-//         if(curRoomIdx!=-1){
-//
-//            
-//            
-//        }else{
-//            System.out.println("Not Available");
-//        }
+
+         
     }
 
-    public List<Model_Client> getClients() {
-        return clients;
-    }
-    
     
 }
