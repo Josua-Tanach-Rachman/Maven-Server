@@ -5,17 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Model_Client;
 import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class Room {
   
+    @JsonProperty("id_Room")
+    private int id_Room;
+    @JsonProperty("nama")
+    private String nama;
+    @JsonProperty("id_RM")
+    private int id_RM;
+    @JsonProperty("clients")
     private List<Model_Client> clients;
-    int id_Room;
-    String nama;
-    int id_RM;
     
+    public Room(){}
     
-    public Room(int id_Room, String nama, int id_RM) {
+    public Room(@JsonProperty("id_Room") int id_Room, @JsonProperty("nama") String nama, @JsonProperty("id_RM") int id_RM) {
         this.id_Room = id_Room;
         this.nama = nama;
         this.id_RM = id_RM;
